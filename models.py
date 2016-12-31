@@ -23,10 +23,9 @@ class CurrencyPair(Model):
 
 
 class CurrencyPairValue(Model):
-	id = UUID(primary_key=True, default=uuid.uuid4)
-	base = Text(required=True)
-	counter = Text(required=True)
-	date = DateTime(primary_key=True, clustering_order="DESC")
+	base = Text(primary_key=True, required=True)
+	counter = Text(primary_key=True, required=True)
+	date = DateTime(primary_key=True, clustering_order="ASC")
 	open = Float()
 	close = Float()
 	high = Float()

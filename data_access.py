@@ -20,11 +20,27 @@ def open_csv_file(file_name):
 	with open(os.path.join(DATA_PATH, file_name), 'r') as f:
 		return f.readlines()
 
-def get_currency_data_from_cass(base, counter):
+def get_currency_data_from_cass(base, counter, date_low=None, date_high=None, limit=100):
+
+	# format dates as (2016-12-01)
+
 	session = connect_to_cluster()
-	cql_query = "SELECT * FROM currency_pair_value WHERE base = '{}' AND counter = '{}' ALLOW FILTERING".format(base.upper(), counter.upper())
+	cql_query = "SELECT * FROM currency_pair_value WHERE base = '{}' AND counter = '{}'".format(base.upper(), counter.upper())
+	if date_low:
+		cql_query += " AND date >= '{}'".format(date_low)
+	if date_high:
+		cql_query += " AND date <= '{}'".format(date_high)
+	cql_query += " LIMIT {} ALLOW FILTERING".format(limit)
 	rows = session.execute(cql_query)
 	return rows
+
+def get_num_of_data_points(base, counter):
+	session = connect_to_cluster()
+	cql_query = "SELECT count(*) FROM currency_pair_value WHERE base = '{}' AND counter = '{}'".format(base.upper(), counter.upper())
+	count = session.execute(cql_query)
+	return count[0].count
+
+
 
 if __name__ == "__main__":
 	a = get_currency_data_from_cass(base="EUR", counter="USD")
