@@ -3,6 +3,7 @@ from datetime import datetime
 from cassandra.cqlengine import connection
 from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine import ValidationError
+from cassandra.cluster import Cluster
 
 from data_access import get_data_file_names, open_csv_file, get_currency_pair_from_file_name
 from models import CurrencyPair, CurrencyPairValue
