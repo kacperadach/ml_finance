@@ -53,11 +53,11 @@ def train_neural_network(x):
 			epoch_loss = 0
 			for _ in range(int(mnist.train.num_examples/batch_size)):
 				epoch_x, epoch_y = mnist.train.next_batch(batch_size)
-				print('{}'.format(epoch_x))
+				print(len(epoch_x))
 				_, c = sess.run([optimizer, cost], feed_dict = {x: epoch_x, y: epoch_y})
 				epoch_loss += c
-			print('Epoch {} completed out of {}, loss: {}'.format(epoch+1, hm_epochs, epoch_loss))
-			print('epoch_y = {}'.format(epoch_y))
+			# print('Epoch {} completed out of {}, loss: {}'.format(epoch+1, hm_epochs, epoch_loss))
+			# print('epoch_y = {}'.format(epoch_y))
 
 		correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
 		accuracy = tf.reduce_mean(tf.cast(correct, 'float'))

@@ -36,4 +36,3 @@ class CurrencyPairValue(Model):
 		super(CurrencyPairValue, self).validate()
 		if self.base not in CURRENCIES or self.counter not in CURRENCIES:
 		    raise ValidationError('Invalid Currency Pair: {}/{}'.format(self.base, self.counter))
-
