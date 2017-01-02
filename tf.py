@@ -12,6 +12,8 @@ n_nodes_hl3 = 500
 
 n_classes = 2
 
+hm_epochs = 10
+
 x = tf.placeholder('float', [input_days, 4])
 y = tf.placeholder('float')
 
@@ -47,9 +49,7 @@ def train_neural_network(x):
 	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(prediction, y))
 	optimizer = tf.train.AdamOptimizer().minimize(cost)
 
-	hm_epochs = 10
-
-	batch_manager = CurrencyBatchManager(batch_size=input_days, days_ahead=10)
+	batch_manager = CurrencyBatchManager(batch_size=input_days, input_days=input_days, look_ahead_days=look_ahead_days)
 
 	with tf.Session() as sess:
 		sess.run(tf.initialize_all_variables())
@@ -58,7 +58,6 @@ def train_neural_network(x):
 			epoch_loss = 0
 			for _ in range(batch_manager.hm_batches()):
 				epoch_x, epoch_y = batch_manager.get_next_batch()
-				print(epoch_y)
 				_, c = sess.run([optimizer, cost], feed_dict = {x: epoch_x, y: epoch_y})
 				epoch_loss += c
 			print('Epoch {} completed out of {}, loss: {}'.format(epoch+1, hm_epochs, epoch_loss))
