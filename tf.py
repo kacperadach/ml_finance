@@ -2,10 +2,13 @@ import tensorflow as tf
 
 from batch import CurrencyBatchManager
 
+from IPython.core.debugger import Tracer
+
 batch_size = 10
 input_days = 30
 data_per_day = 4
 look_ahead_days = 3
+test_percentage = 0.05
 
 n_nodes_hl1 = 500
 n_nodes_hl2 = 500
@@ -13,7 +16,7 @@ n_nodes_hl3 = 500
 
 n_classes = 2
 
-hm_epochs = 10
+hm_epochs = 1
 
 x = tf.placeholder('float', [None, input_days * data_per_day])
 y = tf.placeholder('float')
@@ -52,7 +55,8 @@ def train_neural_network(x):
 	batch_manager = CurrencyBatchManager(
 		batch_size=input_days, 
 		input_days=input_days, 
-		look_ahead_days=look_ahead_days
+		look_ahead_days=look_ahead_days,
+		test_percentage=test_percentage
 	)
 
 	with tf.Session() as sess:
@@ -61,16 +65,17 @@ def train_neural_network(x):
 		for epoch in range(hm_epochs):
 			print('Epoch {}'.format(epoch))
 			epoch_loss = 0
-			for batch_num in range(100):#range(batch_manager.hm_batches()):
+			for batch_num in range(batch_manager.hm_batches()):
 				print('Batch {}'.format(batch_num))
 				epoch_x, epoch_y = batch_manager.get_next_batch()
 				_, c = sess.run([optimizer, cost], feed_dict = {x: epoch_x, y: epoch_y})
 				epoch_loss += c
 			print('Epoch {} completed out of {}, loss: {}'.format(epoch+1, hm_epochs, epoch_loss))
-			print('epoch_y = {}'.format(epoch_y))
 
-		# correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
-		# accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-		# print('Accuracy: {}'.format(accuracy.eval({x: mnist.test.images, y: mnist.test.labels})))
+
+		correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
+		accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
+		test_x, test_y = batch_manager.get_test_batch()
+		print('Accuracy: {}'.format(accuracy.eval({x: test_x, y: test_y})))
 
 train_neural_network(x)
