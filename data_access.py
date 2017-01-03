@@ -24,23 +24,23 @@ def get_currency_data_from_cass(base, counter, date_low=None, date_high=None, li
 
 	# format dates as (2016-12-01)
 
-	session = connect_to_cluster()
+	cluster, session = connect_to_cluster()
 	cql_query = "SELECT * FROM currency_pair_value WHERE base = '{}' AND counter = '{}'".format(base.upper(), counter.upper())
 	if date_low:
 		cql_query += " AND date >= '{}'".format(date_low)
 	if date_high:
 		cql_query += " AND date <= '{}'".format(date_high)
 	cql_query += " LIMIT {} ALLOW FILTERING".format(limit)
-	rows = session.execute(cql_query)
+	rows = map(lambda x: x, session.execute(cql_query))
+	disconnect_from_cluster(cluster)
 	return rows
 
 def get_num_of_data_points(base, counter):
-	session = connect_to_cluster()
+	cluster, session = connect_to_cluster()
 	cql_query = "SELECT count(*) FROM currency_pair_value WHERE base = '{}' AND counter = '{}'".format(base.upper(), counter.upper())
 	count = session.execute(cql_query)
+	disconnect_from_cluster(cluster)
 	return count[0].count
-
-
 
 if __name__ == "__main__":
 	a = get_currency_data_from_cass(base="EUR", counter="USD")

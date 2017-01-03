@@ -4,6 +4,7 @@ from batch import CurrencyBatchManager
 
 batch_size = 10
 input_days = 30
+data_per_day = 4
 look_ahead_days = 3
 
 n_nodes_hl1 = 500
@@ -14,12 +15,12 @@ n_classes = 2
 
 hm_epochs = 10
 
-x = tf.placeholder('float', [input_days, 4])
+x = tf.placeholder('float', [None, input_days * data_per_day])
 y = tf.placeholder('float')
 
 def neural_network_model(data):
 
-	hidden_1_layer = {'weights': tf.Variable(tf.random_normal([4, n_nodes_hl1])),
+	hidden_1_layer = {'weights': tf.Variable(tf.random_normal([input_days * data_per_day, n_nodes_hl1])),
 						'biases': tf.Variable(tf.random_normal([n_nodes_hl1]))}
 
 	hidden_2_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
@@ -45,18 +46,23 @@ def neural_network_model(data):
 
 def train_neural_network(x):
 	prediction = neural_network_model(x)
-	print(prediction)
 	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(prediction, y))
 	optimizer = tf.train.AdamOptimizer().minimize(cost)
 
-	batch_manager = CurrencyBatchManager(batch_size=input_days, input_days=input_days, look_ahead_days=look_ahead_days)
+	batch_manager = CurrencyBatchManager(
+		batch_size=input_days, 
+		input_days=input_days, 
+		look_ahead_days=look_ahead_days
+	)
 
 	with tf.Session() as sess:
 		sess.run(tf.initialize_all_variables())
 
 		for epoch in range(hm_epochs):
+			print('Epoch {}'.format(epoch))
 			epoch_loss = 0
-			for _ in range(batch_manager.hm_batches()):
+			for batch_num in range(100):#range(batch_manager.hm_batches()):
+				print('Batch {}'.format(batch_num))
 				epoch_x, epoch_y = batch_manager.get_next_batch()
 				_, c = sess.run([optimizer, cost], feed_dict = {x: epoch_x, y: epoch_y})
 				epoch_loss += c

@@ -14,6 +14,7 @@ x = tf.placeholder('float', [None, 784])
 y = tf.placeholder('float')
 
 def neural_network_model(data):
+	print(data)
 
 	hidden_1_layer = {'weights': tf.Variable(tf.random_normal([784, n_nodes_hl1])),
 						'biases': tf.Variable(tf.random_normal([n_nodes_hl1]))}
@@ -41,6 +42,7 @@ def neural_network_model(data):
 
 def train_neural_network(x):
 	prediction = neural_network_model(x)
+	# print(prediction)
 	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(prediction, y))
 	optimizer = tf.train.AdamOptimizer().minimize(cost)
 
@@ -51,12 +53,8 @@ def train_neural_network(x):
 
 		for epoch in range(hm_epochs):
 			epoch_loss = 0
-			a = True
 			for _ in range(int(mnist.train.num_examples/batch_size)):
 				epoch_x, epoch_y = mnist.train.next_batch(batch_size)
-				if a:
-					print(epoch_x)
-					a = False
 				_, c = sess.run([optimizer, cost], feed_dict = {x: epoch_x, y: epoch_y})
 				epoch_loss += c
 			# print('Epoch {} completed out of {}, loss: {}'.format(epoch+1, hm_epochs, epoch_loss))
