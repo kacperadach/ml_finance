@@ -1,4 +1,5 @@
 import tensorflow as tf
+import pickle
 
 from batch import CurrencyBatchManager
 
@@ -53,7 +54,7 @@ def train_neural_network(x):
 	optimizer = tf.train.AdamOptimizer().minimize(cost)
 
 	batch_manager = CurrencyBatchManager(
-		batch_size=input_days, 
+		batch_size=batch_size, 
 		input_days=input_days, 
 		look_ahead_days=look_ahead_days,
 		test_percentage=test_percentage
@@ -65,13 +66,15 @@ def train_neural_network(x):
 		for epoch in range(hm_epochs):
 			print('Epoch {}'.format(epoch))
 			epoch_loss = 0
-			for batch_num in range(batch_manager.hm_batches()):
+			for batch_num in range(batch_manager.hm_train_batches()):
 				print('Batch {}'.format(batch_num))
 				epoch_x, epoch_y = batch_manager.get_next_batch()
 				_, c = sess.run([optimizer, cost], feed_dict = {x: epoch_x, y: epoch_y})
 				epoch_loss += c
 			print('Epoch {} completed out of {}, loss: {}'.format(epoch+1, hm_epochs, epoch_loss))
 
+		with open(r"prediction.pickle", "wb") as f:
+			pickle.dump(prediction, f)
 
 		correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
 		accuracy = tf.reduce_mean(tf.cast(correct, 'float'))

@@ -22,8 +22,8 @@ def open_csv_file(file_name):
 
 def get_currency_data_from_cass(base, counter, date_low=None, date_high=None, limit=100):
 
-	# format dates as (2016-12-01)
-
+	# format dates as 2016-12-01
+	
 	cluster, session = connect_to_cluster()
 	cql_query = "SELECT * FROM currency_pair_value WHERE base = '{}' AND counter = '{}'".format(base.upper(), counter.upper())
 	if date_low:
