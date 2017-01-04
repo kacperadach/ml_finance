@@ -10,5 +10,5 @@ def run_spark_script(script_name):
 if __name__ == "__main__":
 	try:
 		run_spark_script(sys.argv[1])
-	except IndexError:
+	except IOError:
 		print('No script provided')
