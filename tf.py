@@ -1,9 +1,9 @@
-import tensorflow as tf
 import pickle
 
-from batch import CurrencyBatchManager
-
+import tensorflow as tf
 from IPython.core.debugger import Tracer
+
+from batch import CurrencyBatchManager
 
 batch_size = 10
 input_days = 30
@@ -73,8 +73,8 @@ def train_neural_network(x):
 				epoch_loss += c
 			print('Epoch {} completed out of {}, loss: {}'.format(epoch+1, hm_epochs, epoch_loss))
 
-		with open(r"prediction.pickle", "wb") as f:
-			pickle.dump(prediction, f)
+		# with open(r"prediction.pickle", "wb") as f:
+		# 	pickle.dump(prediction, f)
 
 		correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
 		accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
