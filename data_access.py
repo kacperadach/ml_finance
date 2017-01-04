@@ -3,10 +3,11 @@ from datetime import datetime
 
 from cluster import connect_to_cluster, disconnect_from_cluster
 from models import CurrencyPair, CurrencyPairValue
-
+from currencies import CURRENCIES
 
 FILE_NAME = '/home/kacper/apps/forex_data/AUDCAD_Candlestick_1_D_BID_17.11.1992-24.12.2016.csv'
 DATA_PATH = '/home/kacper/apps/forex_data/'
+
 
 def get_currency_pair_from_file_name(file_name):
 	base = file_name[0:3]
@@ -15,6 +16,15 @@ def get_currency_pair_from_file_name(file_name):
 
 def get_data_file_names(dirpath='/home/kacper/apps/forex_data'):
 	return os.listdir(dirpath)
+
+def get_all_currency_pairs():
+	all_currencies = []
+	all_files = get_data_file_names()
+	for f in all_files:
+		base, counter = get_currency_pair_from_file_name(f)
+		if base in CURRENCIES and counter in CURRENCIES:
+			all_currencies.append((base, counter))
+	return all_currencies
 
 def open_csv_file(file_name):
 	with open(os.path.join(DATA_PATH, file_name), 'r') as f:
